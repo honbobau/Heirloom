@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
-var pg = require('pg');
-var connectionString = require(path.join(__dirname, '../', '../', 'config'));
+// var pg = require('pg');
+// var connectionString = require(path.join(__dirname, '../', '../', 'config'));
 
 app.get('/', function (req, res) {
   res.send('Hello World!');
