@@ -10,6 +10,4 @@ $> npm install
 
 ## Running
 
-$> npm run start
-
-http://localhost:8080
+$> npm server.js
