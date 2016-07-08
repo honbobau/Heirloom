@@ -4,7 +4,7 @@ module.exports = {
     client: 'postgresql',
     connection: {
       host     : '127.0.0.1',
-      user     : 'chunhonip',
+      user     : 'williamshanks',
       password : 'heirloom',
       database : 'heirloom_data',
       charset  : 'utf8'
