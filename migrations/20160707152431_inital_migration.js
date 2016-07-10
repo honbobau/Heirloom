@@ -11,7 +11,7 @@ exports.up = function(knex, Promise) {
 
     knex.schema.createTable('recipes', function(table) {
       table.increments('id').primary();
-      table.string('ingredients');
+      table.specificType('ingredients', 'text[]');
       table.specificType('tags', 'text[]');
       table.specificType('instructions', 'text[]');
       table.integer('user_id')
