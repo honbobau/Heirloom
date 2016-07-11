@@ -8,9 +8,30 @@ var knex = require('knex')
 var pg = require('pg')
 var routes = require('./routes/index');
 var users = require('./routes/users');
-
-
 var app = express();
+
+var cors = require('cors')
+// var whitelist = ['localhost:3000']
+// var corsOptionsDelegate = function(req, callback){
+//   var corsOptions;
+//   if(whitelist.indexOf(req.header('Origin')) !== -1) {
+//     corsOptions = { origin: true};
+//   } else{
+//     corsOptions = { origin: false};
+//   }
+//   callback(null, corsOptions);
+// };
+
+var allowCrossDomain = function(req, res, next) {
+  if ('OPTIONS' == req.method) {
+    res.header('Access-Control-Allow-Origin', "localhost:8080");
+    res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, PATCH');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+    res.send(200);
+  } else {
+    next();
+  }
+};
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -18,6 +39,7 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(allowCrossDomain)
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

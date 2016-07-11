@@ -13,10 +13,10 @@ DEBUG=myapp:* npm start
 
 /// POST REQUESTS ///
 
-In the form please specify enctype as "application/x-www-form-urlencoded"
+In the form please specify encType as "application/x-www-form-urlencoded"
 
 EXAMPLE
-<form action="demo_post_enctype.asp" method="post" enctype="multipart/form-data">
+<form action="demo_post_enctype.asp" method="post" encType="multipart/form-data">
   First name: <input type="text" name="fname"><br>
   Last name: <input type="text" name="lname"><br>
   <input type="submit" value="Submit">

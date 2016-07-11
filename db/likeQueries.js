@@ -12,8 +12,12 @@ function getLikes(userID) {
   return Likes().where('user_id', parseInt(userID));
 }
 
+function add(userID, recipeID) {
+  return Likes().insert({user_id: userID, recipe_id: recipeID})
+}
 
 module.exports = {
   getAllLikes: getAllLikes,
-  getLikes: getLikes
+  getLikes: getLikes,
+  add: add
 };
