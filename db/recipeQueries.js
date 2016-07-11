@@ -4,7 +4,7 @@ function Recipes(){
   return knex('recipes');
 }
 
-function getAllRec() {
+function getAll() {
   return Recipes().select();
 }
 
@@ -16,11 +16,13 @@ function getSingle(recID) {
   return Recipes().where('id', parseInt(recID))
 }
 
-
-
+function add(recipe) {
+  return Recipes().insert(recipe, 'id');
+}
 
 module.exports = {
-  getAllRec: getAllRec,
+  getAll: getAll,
   getRec: getRec,
-  getSingle: getSingle
+  getSingle: getSingle,
+  add: add
 };
