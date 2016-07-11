@@ -12,10 +12,15 @@ function getRec(userID) {
   return Recipes().where('user_id', parseInt(userID));
 }
 
+function getSingle(recID) {
+  return Recipes().where('id', parseInt(recID))
+}
+
 
 
 
 module.exports = {
   getAllRec: getAllRec,
-  getRec: getRec
+  getRec: getRec,
+  getSingle: getSingle
 };
