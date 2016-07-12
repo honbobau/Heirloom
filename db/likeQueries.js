@@ -16,8 +16,13 @@ function add(userID, recipeID) {
   return Likes().insert({user_id: userID, recipe_id: recipeID})
 }
 
+function deleteID(likeID) {
+  return Likes().where('id', parseInt(likeID)).del();
+}
+
 module.exports = {
   getAllLikes: getAllLikes,
   getLikes: getLikes,
-  add: add
+  add: add,
+  deleteID: deleteID
 };

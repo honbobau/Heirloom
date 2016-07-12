@@ -16,9 +16,14 @@ function add(userID, followingID) {
   return Follows().insert({user_id: userID, following_id: followingID})
 }
 
+function deleteID(followID) {
+  return Follows().where('id', parseInt(followID)).del();
+}
+
 
 module.exports = {
   getAllFollows: getAllFollows,
   getFollows: getFollows,
-  add: add
+  add: add,
+  deleteID: deleteID
 };

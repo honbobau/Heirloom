@@ -144,8 +144,8 @@ router.post('/user/:user_id/recipe/:recipe_id/likes', function(req, res, next){
   })
   .catch(function(error){
     next(error)
-  })
-})
+  });
+});
 
 router.post('/user/:user_id/followUser/:following_id/follows', function(req, res, next){
   followQueries.add(req.params.user_id, req.params.following_id)
@@ -154,7 +154,83 @@ router.post('/user/:user_id/followUser/:following_id/follows', function(req, res
   })
   .catch(function(error){
     next(error)
+  });
+});
+
+router.put('/user/:id', function(req, res, next){
+  userQueries.update(req.params.id, req.body)
+  .then(function(){
+    return queries.getSingle(req.params.id);
   })
-})
+  .then(function(user) {
+    res.status(200).json(user);
+  })
+  .catch(function(error){
+    next(error);
+  });
+});
+
+router.put('/recipe/:id', function(req, res, next){
+  recipeQueries.update(req.params.id, req.body)
+  .then(function(){
+    return queries.getSingle(req.params.id);
+  })
+  .then(function(user) {
+    res.status(200).json(user);
+  })
+  .catch(function(error){
+    next(error);
+  });
+});
+
+router.delete('/recipe/:id', function(req, res, next){
+  recipeQueries.deleteID(req.params.id)
+  .then(function(){
+    res.status(200).json();
+  })
+  .catch(function(error){
+    next(error);
+  });
+});
+
+router.delete('/user/:id', function(req, res, next){
+  userQueries.deleteID(req.params.id)
+  .then(function(){
+    res.status(200).json();
+  })
+  .catch(function(error){
+    next(error);
+  });
+});
+
+router.delete('/favourites/:id', function(req, res, next){
+  favQueries.deleteID(req.params.id)
+  .then(function(){
+    res.status(200).json();
+  })
+  .catch(function(error){
+    next(error);
+  });
+});
+
+router.delete('/likes/:id', function(req, res, next){
+  likeQueries.deleteID(req.params.id)
+  .then(function(){
+    res.status(200).json();
+  })
+  .catch(function(error){
+    next(error);
+  });
+});
+
+router.delete('/follows/:id', function(req, res, next){
+  followQueries.deleteID(req.params.id)
+  .then(function(){
+    res.status(200).json();
+  })
+  .catch(function(error){
+    next(error);
+  });
+});
 
 module.exports = router;

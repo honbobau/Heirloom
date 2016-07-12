@@ -20,9 +20,19 @@ function add(recipe) {
   return Recipes().insert(recipe, 'id');
 }
 
+function update(recipeID, updates) {
+  return Recipe().where('id', parseInt(recipeID)).update(updates)
+}
+
+function deleteID(recipeID) {
+  return Recipe().where('id', parseInt(recipeID)).del();
+}
+
 module.exports = {
   getAll: getAll,
   getRec: getRec,
   getSingle: getSingle,
-  add: add
+  add: add,
+  update: update,
+  deleteID: deleteID
 };
