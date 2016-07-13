@@ -13,17 +13,24 @@ var passport      = require('passport');
 var fs            = require('fs');
 var cors          = require('cors')
 var jwt           = require('jsonwebtoken')
+
 var aws           = require('aws-sdk')
+
+process.env.AWS_ACCESS_KEY_ID = 'AKIAI3RY2WC24RH65JYQ';
+process.env.AWS_SECRET_ACCESS_KEY = '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';
+
+
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', "http://localhost:8080");
+    res.setHeader('Access-Control-Allow-Origin', "*");
     res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, PATCH');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
     next();
 });
+
 
 app.use('/s3', require('react-s3-uploader/s3router')({
   bucket: "heirloom-toronto",
