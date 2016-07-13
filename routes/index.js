@@ -1,12 +1,61 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
+const cors = require('cors')
+const formidable = require('formidable')
+const fs = require('fs')
 const userQueries = require('../db/userQueries')
 const recipeQueries = require('../db/recipeQueries')
 const favQueries = require('../db/favQueries')
 const likeQueries = require('../db/likeQueries')
 const followQueries = require('../db/followQueries')
-const cors = require('cors')
+const photoQueries = require('../db/photoQueries')
+const config = require('./config');
+const jwt = require('jsonwebtoken')
+
+// Generate upon successful login
+router.post('/login', function(req, res){
+  userQueries.getOne(req.body.username)
+  .then(function(user){
+    user = user[0]
+    if (!user) {
+      res.json({success: false, message: "Authentication failed. Username not found."})
+    } else if (user) {
+      if (user.password != req.body.password) {
+        res.json({ success: false, message: "Authentication failed. Incorrect password."})
+      } else {
+        var cert = config.secret
+        var token = jwt.sign(user, 'superSecret', {
+          expiresIn: '24h'
+        });
+        res.json({
+          success: true,
+          message: 'Enjoy',
+          token: token
+        });
+      }
+    }
+  });
+});
+
+router.use(function(req, res, next){
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  if (token) {
+    jwt.verify(token, 'superSecret', function(err, decoded){
+      if (err) {
+        return res.json({ success: false, message: 'Failed to Authenticate'})
+      } else {
+        req.decoded = decoded;
+        next();
+      }
+    });
+  } else {
+    return res.status(403).send({
+      success: false,
+      message: 'No token provided.'
+    });
+  }
+});
 
 // Get all users
 router.get('/users', function(req, res, next) {
@@ -65,6 +114,17 @@ router.get('/recipes/:id', function (req, res, next) {
   });
 });
 
+// Get photos associated to a recipe
+router.get('/recipes/:recipe_id/photos', function(req, res, next){
+  photoQueries.getPhotos(req.params.recipe_id)
+  .then(function(photos){
+    res.json(photos);
+  })
+  .catch(function(error){
+    res.status(500).send(error);
+  })
+})
+
 // Get favourites associated to a user_id
 router.get('/user/:user_id/favourites', function (req, res, next) {
   favQueries.getFavs(req.params.user_id)
@@ -99,7 +159,6 @@ router.get('/user/:user_id/follows', function (req, res, next) {
   });
 });
 
-
 // See README.md for proper form format when submitting post requests
 router.post('/users', function(req, res, next){
   userQueries.add(req.body)
@@ -114,6 +173,7 @@ router.post('/users', function(req, res, next){
   });
 });
 
+// Add recipes
 router.post('/recipes', function (req, res, next){
   recipeQueries.add(req.body)
   .then(function(recipeID){
@@ -127,6 +187,8 @@ router.post('/recipes', function (req, res, next){
   });
 });
 
+
+// Add favourites
 router.post('/user/:user_id/recipe/:recipe_id/favourites', function(req, res, next){
   favQueries.add(req.params.user_id, req.params.recipe_id)
   .then(function(favourites){
@@ -137,6 +199,8 @@ router.post('/user/:user_id/recipe/:recipe_id/favourites', function(req, res, ne
   })
 })
 
+
+// Add likes
 router.post('/user/:user_id/recipe/:recipe_id/likes', function(req, res, next){
   likeQueries.add(req.params.user_id, req.params.recipe_id)
   .then(function(likes){
@@ -147,6 +211,7 @@ router.post('/user/:user_id/recipe/:recipe_id/likes', function(req, res, next){
   });
 });
 
+// Add follows
 router.post('/user/:user_id/followUser/:following_id/follows', function(req, res, next){
   followQueries.add(req.params.user_id, req.params.following_id)
   .then(function(follows){
@@ -157,6 +222,28 @@ router.post('/user/:user_id/followUser/:following_id/follows', function(req, res
   });
 });
 
+// Add photos via formidable
+router.post('/recipes/:recipe_id/photos', function(req, res){
+  var form = new formidable.IncomingForm();
+  form.multiples = true;
+  form.uploadDir = '../Heirloom/uploads/';
+  form.on('file', function(field, file){
+    var filePath = path.join(form.uploadDir, file.name)
+    fs.rename(file.path, filePath, function(){
+      photoQueries.add(req.params.recipe_id, filePath)
+    });
+  });
+
+  form.on('error', function(err){
+    console.log('An error has occured: \n' + err);
+  });
+  form.on('end', function(){
+    res.end('success');
+  });
+  form.parse(req);
+});
+
+// Edit user account details
 router.put('/user/:id', function(req, res, next){
   userQueries.update(req.params.id, req.body)
   .then(function(){
@@ -170,6 +257,8 @@ router.put('/user/:id', function(req, res, next){
   });
 });
 
+
+//Edit recipe
 router.put('/recipe/:id', function(req, res, next){
   recipeQueries.update(req.params.id, req.body)
   .then(function(){
@@ -183,6 +272,7 @@ router.put('/recipe/:id', function(req, res, next){
   });
 });
 
+// Delete recipe
 router.delete('/recipe/:id', function(req, res, next){
   recipeQueries.deleteID(req.params.id)
   .then(function(){
@@ -193,6 +283,8 @@ router.delete('/recipe/:id', function(req, res, next){
   });
 });
 
+
+// Delete user
 router.delete('/user/:id', function(req, res, next){
   userQueries.deleteID(req.params.id)
   .then(function(){
@@ -203,6 +295,7 @@ router.delete('/user/:id', function(req, res, next){
   });
 });
 
+// Delete favourites
 router.delete('/favourites/:id', function(req, res, next){
   favQueries.deleteID(req.params.id)
   .then(function(){
@@ -213,6 +306,8 @@ router.delete('/favourites/:id', function(req, res, next){
   });
 });
 
+
+// Delete likes
 router.delete('/likes/:id', function(req, res, next){
   likeQueries.deleteID(req.params.id)
   .then(function(){
@@ -223,8 +318,20 @@ router.delete('/likes/:id', function(req, res, next){
   });
 });
 
+// Delete follows
 router.delete('/follows/:id', function(req, res, next){
   followQueries.deleteID(req.params.id)
+  .then(function(){
+    res.status(200).json();
+  })
+  .catch(function(error){
+    next(error);
+  });
+});
+
+// Delete Photos
+router.delete('/photos/:id', function(req, res, next){
+  photoQueries.deleteID(req.params.id)
   .then(function(){
     res.status(200).json();
   })

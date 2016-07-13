@@ -12,6 +12,10 @@ function getSingle(userID) {
   return Users().where('id', parseInt(userID)).first();
 }
 
+function getOne(username) {
+  return Users().where('username', username)
+}
+
 function add(user) {
   return Users().insert(user, 'id');
 }
@@ -29,5 +33,6 @@ module.exports = {
   getSingle: getSingle,
   add: add,
   update: update,
-  deleteID: deleteID
+  deleteID: deleteID,
+  getOne: getOne
 };
