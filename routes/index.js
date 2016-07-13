@@ -1,19 +1,19 @@
-const express = require('express');
-const router = express.Router();
-const path = require('path');
-const cors = require('cors')
-const formidable = require('formidable')
-const fs = require('fs')
-const userQueries = require('../db/userQueries')
-const recipeQueries = require('../db/recipeQueries')
-const favQueries = require('../db/favQueries')
-const likeQueries = require('../db/likeQueries')
-const followQueries = require('../db/followQueries')
-const photoQueries = require('../db/photoQueries')
-const config = require('./config');
-const jwt = require('jsonwebtoken')
+const express         = require('express');
+const router          = express.Router();
+const path            = require('path');
+const cors            = require('cors')
+const formidable      = require('formidable')
+const fs              = require('fs')
+const userQueries     = require('../db/userQueries')
+const recipeQueries   = require('../db/recipeQueries')
+const favQueries      = require('../db/favQueries')
+const likeQueries     = require('../db/likeQueries')
+const followQueries   = require('../db/followQueries')
+const photoQueries    = require('../db/photoQueries')
+const config          = require('./config');
+const jwt             = require('jsonwebtoken')
 
-// Generate upon successful login
+// Generate token upon successful login
 router.post('/login', function(req, res){
   userQueries.getOne(req.body.username)
   .then(function(user){
@@ -38,6 +38,7 @@ router.post('/login', function(req, res){
   });
 });
 
+// Check for token
 router.use(function(req, res, next){
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
   if (token) {
@@ -68,6 +69,7 @@ router.get('/users', function(req, res, next) {
   });
 });
 
+// Get all recipes
 router.get('/recipes', function(req, res, next){
   recipeQueries.getAll()
   .then(function(recipes){
@@ -102,7 +104,6 @@ router.get('/user/:user_id/recipes', function (req, res, next) {
   });
 });
 
-
 // Get a single recipe
 router.get('/recipes/:id', function (req, res, next) {
   recipeQueries.getSingle(req.params.id)
@@ -126,15 +127,16 @@ router.get('/recipes/:recipe_id/photos', function(req, res, next){
 })
 
 // Get favourites associated to a user_id
-router.get('/user/:user_id/favourites', function (req, res, next) {
-  favQueries.getFavs(req.params.user_id)
-  .then(function(users){
-    res.status(200).json(users);
-  })
-  .catch(function(error){
-    next(error);
-  });
-});
+// router.get('/user/:user_id/favourites', function (req, res, next) {
+//   favQueries.getFavs(req.params.user_id)
+//   .then(function(recipe){
+//     recipe.
+//     res.status(200).json(users);
+//   })
+//   .catch(function(error){
+//     next(error);
+//   });
+// });
 
 
 // Get likes associated to a user_id
@@ -224,30 +226,20 @@ router.post('/user/:user_id/followUser/:following_id/follows', function(req, res
 
 // Add photos via formidable
 router.post('/recipes/:recipe_id/photos', function(req, res){
-  var form = new formidable.IncomingForm();
-  form.multiples = true;
-  form.uploadDir = '../Heirloom/uploads/';
-  form.on('file', function(field, file){
-    var filePath = path.join(form.uploadDir, file.name)
-    fs.rename(file.path, filePath, function(){
-      photoQueries.add(req.params.recipe_id, filePath)
-    });
+  photoQueries.add(req.params.recipe_id, req.body)
+  .then(function(){
+    return photoQueries.getPhotos(req.params.recipe_id)
+  })
+  .then(function(photo){
+    res.status(200).json(photo);
   });
-
-  form.on('error', function(err){
-    console.log('An error has occured: \n' + err);
-  });
-  form.on('end', function(){
-    res.end('success');
-  });
-  form.parse(req);
 });
 
 // Edit user account details
 router.put('/user/:id', function(req, res, next){
   userQueries.update(req.params.id, req.body)
   .then(function(){
-    return queries.getSingle(req.params.id);
+    return userQueries.getSingle(req.params.id);
   })
   .then(function(user) {
     res.status(200).json(user);

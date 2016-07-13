@@ -21,11 +21,11 @@ function add(recipe) {
 }
 
 function update(recipeID, updates) {
-  return Recipe().where('id', parseInt(recipeID)).update(updates)
+  return Recipes().where('id', parseInt(recipeID)).update(updates)
 }
 
 function deleteID(recipeID) {
-  return Recipe().where('id', parseInt(recipeID)).del();
+  return Recipes().where('id', parseInt(recipeID)).del();
 }
 
 module.exports = {
