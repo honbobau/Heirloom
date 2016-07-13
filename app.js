@@ -13,7 +13,7 @@ var passport      = require('passport');
 var fs            = require('fs');
 var cors          = require('cors')
 var jwt           = require('jsonwebtoken')
-
+var aws           = require('aws-sdk')
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');

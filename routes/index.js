@@ -2,7 +2,6 @@ const express         = require('express');
 const router          = express.Router();
 const path            = require('path');
 const cors            = require('cors')
-const formidable      = require('formidable')
 const fs              = require('fs')
 const userQueries     = require('../db/userQueries')
 const recipeQueries   = require('../db/recipeQueries')
