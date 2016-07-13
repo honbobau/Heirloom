@@ -102,7 +102,7 @@ router.get('/user/:user_id/follows', function (req, res, next) {
 
 // See README.md for proper form format when submitting post requests
 router.post('/users', function(req, res, next){
-
+  console.log(req)
   userQueries.add(req.body)
   .then(function(userID){
     return userQueries.getSingle(userID);

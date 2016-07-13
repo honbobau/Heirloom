@@ -23,14 +23,11 @@ var cors = require('cors')
 // };
 
 var allowCrossDomain = function(req, res, next) {
-  if ('OPTIONS' == req.method) {
-    res.header('Access-Control-Allow-Origin', "localhost:8080");
+    res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
     res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, PATCH');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
     res.send(200);
-  } else {
     next();
-  }
 };
 
 // view engine setup
