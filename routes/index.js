@@ -107,8 +107,21 @@ router.get('/user/:id', function (req, res, next) {
 
 // Get recipes associated to user_id
 router.get('/user/:user_id/recipes', function (req, res, next) {
+  var recipeData = []
   recipeQueries.getRec(req.params.user_id)
-  .then(function(users){
+  .then(function(recipes){
+    dbResponse = 0
+    total = recipes.length
+    recipes.forEach(function(info){
+      var recipeSingle = []
+      recipeSingle.push(info)
+      dbResponse++
+      photoQueries.getPhotos(info.recipe_id)
+      .then(function(photos){
+
+
+      })
+    })
     res.status(200).json(users);
   })
   .catch(function(error){
@@ -132,10 +145,10 @@ router.get('/recipes/:id', function (req, res, next) {
         dbResponse++
         if (dbResponse == total) {
           res.status(200).json(
-            {
+            [{
               recipe: recipeArr[0],
               photos: photosArr
-            }
+            }]
           );    
         }
       })
