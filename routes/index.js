@@ -37,6 +37,19 @@ router.post('/login', function(req, res){
   });
 });
 
+router.post('/users', function(req, res, next){
+  userQueries.add(req.body)
+  .then(function(userID){
+    return userQueries.getSingle(userID);
+  })
+  .then(function(users){
+    res.status(200).json(users)
+  })
+  .catch(function(error){
+    next(error);
+  });
+});
+
 // Check for token
 router.use(function(req, res, next){
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -105,9 +118,28 @@ router.get('/user/:user_id/recipes', function (req, res, next) {
 
 // Get a single recipe
 router.get('/recipes/:id', function (req, res, next) {
+  var recipeArr = []
+  var photosArr = [];
   recipeQueries.getSingle(req.params.id)
   .then(function(recipes){
-    res.status(200).json(recipes);
+    recipeArr.push(recipes[0])
+    photoQueries.getPhotos(recipes[0].id)
+    .then(function(photos){
+      dbResponse = 0
+      total = photos.length
+      photos.forEach(function(photo) { 
+        photosArr.push(photo)
+        dbResponse++
+        if (dbResponse == total) {
+          res.status(200).json(
+            {
+              recipe: recipeArr[0],
+              photos: photosArr
+            }
+          );    
+        }
+      })
+    })
   })
   .catch(function(error){
     next(error);
