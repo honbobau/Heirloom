@@ -84,8 +84,9 @@ router.get('/users', function(req, res, next) {
 // Get all recipes
 router.get('/recipes', function(req, res, next){
   recipeQueries.getAll()
-  .then(function(recipes){
-    res.status(200).json(recipes);
+  .then(function(recipes) {
+    Promise.all(recipes.map(recipe => getRecipePhotos(recipe.id)))
+    .then(allRecipes => res.status(200).json(allRecipes));
   })
   .catch(function(error){
     next(error);
@@ -107,53 +108,31 @@ router.get('/user/:id', function (req, res, next) {
 
 // Get recipes associated to user_id
 router.get('/user/:user_id/recipes', function (req, res, next) {
-  var recipeData = []
   recipeQueries.getRec(req.params.user_id)
-  .then(function(recipes){
-    dbResponse = 0
-    total = recipes.length
-    recipes.forEach(function(info){
-      var recipeSingle = []
-      recipeSingle.push(info)
-      dbResponse++
-      photoQueries.getPhotos(info.recipe_id)
-      .then(function(photos){
-
-
-      })
-    })
-    res.status(200).json(users);
+  .then(function(recipes) {
+    Promise.all(recipes.map(recipe => getRecipePhotos(recipe.id)))
+    .then(allRecipes => res.status(200).json(allRecipes));
   })
   .catch(function(error){
     next(error);
   });
 });
 
+function getRecipePhotos(id) {
+  return recipeQueries.getSingle(id)
+  .then(recipes => {
+    return photoQueries.getPhotos(id)
+    .then(photos => ([{
+        recipe: recipes[0],
+        photos
+    }]));
+  });
+}
+
 // Get a single recipe
 router.get('/recipes/:id', function (req, res, next) {
-  var recipeArr = []
-  var photosArr = [];
-  recipeQueries.getSingle(req.params.id)
-  .then(function(recipes){
-    recipeArr.push(recipes[0])
-    photoQueries.getPhotos(recipes[0].id)
-    .then(function(photos){
-      dbResponse = 0
-      total = photos.length
-      photos.forEach(function(photo) { 
-        photosArr.push(photo)
-        dbResponse++
-        if (dbResponse == total) {
-          res.status(200).json(
-            [{
-              recipe: recipeArr[0],
-              photos: photosArr
-            }]
-          );    
-        }
-      })
-    })
-  })
+  getRecipePhotos(req.params.id)
+  .then(recipePhotos => res.status(200).json(recipePhotos))
   .catch(function(error){
     next(error);
   });
@@ -290,9 +269,6 @@ router.post('/user/:user_id/followUser/:following_id/follows', function(req, res
 // Add photos via formidable
 router.post('/recipes/photos', function(req, res){
   photoQueries.add(req.body)
-  .then(function(){
-    return photoQueries.getPhotos(req.params.recipe_id)
-  })
   .then(function(photo){
     res.status(200).json(photo);
   });
