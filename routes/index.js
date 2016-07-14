@@ -125,19 +125,6 @@ router.get('/recipes/:recipe_id/photos', function(req, res, next){
   })
 })
 
-// Get favourites associated to a user_id
-// router.get('/user/:user_id/favourites', function (req, res, next) {
-//   favQueries.getFavs(req.params.user_id)
-//   .then(function(recipe){
-//     recipe.
-//     res.status(200).json(users);
-//   })
-//   .catch(function(error){
-//     next(error);
-//   });
-// });
-
-
 // Get likes associated to a user_id
 router.get('/user/:user_id/likes', function (req, res, next) {
   likeQueries.getLikes(req.params.user_id)
@@ -149,15 +136,47 @@ router.get('/user/:user_id/likes', function (req, res, next) {
   });
 });
 
-// Get followers associated to a user_id
-router.get('/user/:user_id/follows', function (req, res, next) {
-  followQueries.getFollows(req.params.user_id)
-  .then(function(users){
-    res.status(200).json(users);
+// Get favourites associated to a user_id
+router.get('/user/:user_id/favourites', function (req, res, next) {
+  favQueries.getFavs(req.params.user_id)
+  .then(function(favs){
+    result = []
+    dbResponse = 0
+    total = favs.length
+    favs.forEach(function(recipeID) { 
+      recipeQueries.getSingle(recipeID.recipe_id)
+      .then(function(recipe){
+        result.push(recipe)
+        dbResponse++
+        if (dbResponse == total) {
+        res.status(200).json(result);    
+        }
+      })
+    })
   })
   .catch(function(error){
     next(error);
   });
+});
+
+// Get followers associated to a user_id
+router.get('/user/:user_id/follows', function (req, res, next) {
+  followQueries.getFollows(req.params.user_id)
+  .then(function(following){
+    result = []
+    dbResponse = 0
+    total = following.length
+    following.forEach(function(followID) { 
+      userQueries.getSingle(followID.following_id)
+      .then(function(user){
+        result.push(user)
+        dbResponse++
+        if (dbResponse == total) {
+        res.status(200).json(result);    
+        }
+      })
+    })
+  })
 });
 
 // See README.md for proper form format when submitting post requests
@@ -224,8 +243,8 @@ router.post('/user/:user_id/followUser/:following_id/follows', function(req, res
 });
 
 // Add photos via formidable
-router.post('/recipes/:recipe_id/photos', function(req, res){
-  photoQueries.add(req.params.recipe_id, req.body)
+router.post('/recipes/photos', function(req, res){
+  photoQueries.add(req.body)
   .then(function(){
     return photoQueries.getPhotos(req.params.recipe_id)
   })

@@ -14,7 +14,6 @@ var fs            = require('fs');
 var cors          = require('cors')
 var jwt           = require('jsonwebtoken')
 
-var aws           = require('aws-sdk')
 
 process.env.AWS_ACCESS_KEY_ID = 'AKIAI3RY2WC24RH65JYQ';
 process.env.AWS_SECRET_ACCESS_KEY = '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';

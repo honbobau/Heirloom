@@ -12,8 +12,8 @@ function getPhotos(recipeID) {
   return Photos().where('recipe_id', parseInt(recipeID));
 };
 
-function add(recipeID, filePath) {
-  return Photos().insert({recipe_id: recipeID, filepath: filePath})
+function add(body) {
+  return Photos().insert(body, 'id')
 };
 
 function deleteID(photoID) {

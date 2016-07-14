@@ -13,7 +13,7 @@ function getRec(userID) {
 }
 
 function getSingle(recID) {
-  return Recipes().where('id', parseInt(recID))
+  return Recipes().where('id', parseInt(recID));
 }
 
 function add(recipe) {
