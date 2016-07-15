@@ -225,6 +225,12 @@ router.post('/users', function(req, res, next){
 
 // Add recipes
 router.post('/recipes', function (req, res, next){
+  var description = req.body.description
+  var result = description.match(/#\w+/g)
+  var tags = result.map(function(e){
+    return e.replace('#', '')
+  })
+  req.body.tags = tags
   recipeQueries.add(req.body)
   .then(function(recipeID){
     return recipeQueries.getSingle(recipeID);
