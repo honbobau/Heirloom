@@ -11,6 +11,9 @@ const followQueries   = require('../db/followQueries')
 const photoQueries    = require('../db/photoQueries')
 const config          = require('./config');
 const jwt             = require('jsonwebtoken')
+const bcrypt          = require('bcrypt');
+const salt            = bcrypt.genSaltSync(10);
+
 
 // Generate token upon successful login
 router.post('/login', function(req, res){
@@ -20,7 +23,7 @@ router.post('/login', function(req, res){
     if (!user) {
       res.json({success: false, message: "Authentication failed. Username not found."})
     } else if (user) {
-      if (user.password != req.body.password) {
+      if (bcrypt.compareSync(req.body.password, user.password) == false) {
         res.json({ success: false, message: "Authentication failed. Incorrect password."})
       } else {
         var cert = config.secret
@@ -39,6 +42,7 @@ router.post('/login', function(req, res){
 });
 
 router.post('/users', function(req, res, next){
+  req.body.password = bcrypt.hashSync(req.body.password, 10); 
   userQueries.add(req.body)
   .then(function(userID){
     return userQueries.getSingle(userID);
