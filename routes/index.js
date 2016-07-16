@@ -193,7 +193,6 @@ router.get('/user/:user_id/favourites', function (req, res, next) {
 router.get('/user/:user_id/follows', function (req, res, next) {
   followQueries.getFollows(req.params.user_id)
   .then(function(following){
-    result = []
     dbResponse = 0
     total = following.length
     following.forEach(function(followID) { 
@@ -202,10 +201,45 @@ router.get('/user/:user_id/follows', function (req, res, next) {
         result.push(user)
         dbResponse++
         if (dbResponse == total) {
-        res.status(200).json(result);    
+        return result;
         }
       })
+      .then(function(result){
+        results = []
+
+      })
     })
+  })
+});
+
+function fillRecipe(recipe) {
+  console.log(recipe);
+  return photoQueries
+    .getPhotos(recipe.id)
+    .then(function (photos) {
+      return Object.assign(recipe, {photos: photos});
+    });
+}
+
+router.get('/user/:user_id/follows/recipes', function (req, res, next){
+  followQueries.getFollows(req.params.user_id)
+  .then(function (follows) {
+    return follows.map(function (follow) {
+      return follow.following_id;
+    });
+  })
+  .then(function (following_ids) {
+    return Promise.all(following_ids
+    .map(recipeQueries.getRec));
+  })
+  .then(function(recipe_collections){
+    // console.log(recipe_collections)
+    return Promise.all(recipe_collections.map(function (collection) {
+      return Promise.all(collection.map(fillRecipe));
+    }))
+  })
+  .then(function(message) {
+    res.status(200).json(message);
   })
 });
 
