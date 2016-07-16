@@ -26,7 +26,7 @@ app.set('view engine', 'jade');
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', "*");
     res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, PATCH');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, x-access-token');
     next();
 });
 
