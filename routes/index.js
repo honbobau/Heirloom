@@ -241,6 +241,9 @@ router.get('/user/:user_id/follows/recipes', function (req, res, next){
   .then(function(message) {
     res.status(200).json(message);
   })
+  .catch(function(error){
+    next(error);
+  });
 });
 
 // See README.md for proper form format when submitting post requests
@@ -261,10 +264,15 @@ router.post('/users', function(req, res, next){
 router.post('/recipes', function (req, res, next){
   var description = req.body.description
   var result = description.match(/#\w+/g)
-  var tags = result.map(function(e){
-    return e.replace('#', '')
-  })
-  req.body.tags = tags
+  
+  if (result !== null) {
+    var tags = result.map(function(e){
+      return e.replace('#', '')
+    })
+    req.body.tags = tags
+  } else {
+    req.body.tags = null
+  };
   recipeQueries.add(req.body)
   .then(function(recipeID){
     return recipeQueries.getSingle(recipeID);
