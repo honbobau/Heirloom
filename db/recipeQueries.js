@@ -16,6 +16,10 @@ function getSingle(recID) {
   return Recipes().where('id', parseInt(recID));
 }
 
+function getSearch(tag) {
+  return knex.raw(`select * from recipes where '${tag}' = ANY(tags)`); 
+}
+
 function add(recipe) {
   return Recipes().insert(recipe, 'id');
 }
@@ -34,5 +38,6 @@ module.exports = {
   getSingle: getSingle,
   add: add,
   update: update,
-  deleteID: deleteID
+  deleteID: deleteID,
+  getSearch: getSearch
 };
