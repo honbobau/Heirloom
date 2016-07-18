@@ -9,7 +9,7 @@
 6 silly lifecycle Heirloom-server@0.0.0~prestart: no script for prestart, continuing
 7 info lifecycle Heirloom-server@0.0.0~start: Heirloom-server@0.0.0
 8 verbose lifecycle Heirloom-server@0.0.0~start: unsafe-perm in lifecycle true
-9 verbose lifecycle Heirloom-server@0.0.0~start: PATH: /Users/williamshanks/.nvm/versions/node/v4.2.2/lib/node_modules/npm/bin/node-gyp-bin:/Users/williamshanks/lighthouse/final_project/Heirloom/node_modules/.bin:/Users/williamshanks/.nvm/versions/node/v4.2.2/bin:/Users/williamshanks/.nvm/versions/node/v4.2.2/bin:/Users/williamshanks/.rvm/gems/ruby-2.2.4/bin:/Users/williamshanks/.rvm/gems/ruby-2.2.4@global/bin:/Users/williamshanks/.rvm/rubies/ruby-2.2.4/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/williamshanks/.rvm/bin
+9 verbose lifecycle Heirloom-server@0.0.0~start: PATH: /Users/williamshanks/.nvm/versions/node/v4.2.2/lib/node_modules/npm/bin/node-gyp-bin:/Users/williamshanks/lighthouse/final_project/Heirloom/node_modules/.bin:/Users/williamshanks/.nvm/versions/node/v4.2.2/bin:/Users/williamshanks/.rvm/gems/ruby-2.2.4/bin:/Users/williamshanks/.rvm/gems/ruby-2.2.4@global/bin:/Users/williamshanks/.rvm/rubies/ruby-2.2.4/bin:/Users/williamshanks/.nvm/versions/node/v4.2.2/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/williamshanks/.rvm/bin
 10 verbose lifecycle Heirloom-server@0.0.0~start: CWD: /Users/williamshanks/lighthouse/final_project/Heirloom
 11 silly lifecycle Heirloom-server@0.0.0~start: Args: [ '-c', 'node ./bin/www' ]
 12 silly lifecycle Heirloom-server@0.0.0~start: Returned: code: 1  signal: null

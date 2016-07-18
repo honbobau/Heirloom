@@ -49,6 +49,36 @@ router.post('/users', function(req, res, next){
   })
   .then(function(users){
     res.status(200).json(users)
+    return userQueries.getSingle(users.id)
+  })
+  .then(function(data){
+    return followQueries.add(data.id, data.id)
+  })
+  .catch(function(error){
+    next(error);
+  });
+});
+
+// router.post('/users', function(req, res, next){
+//   userQueries.add(req.body)
+//   .then(function(userID){
+//     return userQueries.getSingle(userID);
+//   })
+//   .then(function(users){
+//     followQueries.add(users.id, users.id)
+//     res.status(200).json(users)
+//   })
+//   .catch(function(error){
+//     next(error);
+//   })
+// });
+
+router.get('/recipes', function(req, res, next){
+  console.log(req.decoded)
+  recipeQueries.getAll()
+  .then(function(recipes) {
+    Promise.all(recipes.map(recipe => getRecipePhotos(recipe.id)))
+    .then(allRecipes => res.status(200).json(allRecipes));
   })
   .catch(function(error){
     next(error);
@@ -87,17 +117,7 @@ router.get('/users', function(req, res, next) {
 });
 
 // Get all recipes
-router.get('/recipes', function(req, res, next){
-  console.log(req.decoded)
-  recipeQueries.getAll()
-  .then(function(recipes) {
-    Promise.all(recipes.map(recipe => getRecipePhotos(recipe.id)))
-    .then(allRecipes => res.status(200).json(allRecipes));
-  })
-  .catch(function(error){
-    next(error);
-  });
-});
+
 
 
 // Get single user
@@ -143,6 +163,7 @@ router.get('/recipes/:id', function (req, res, next) {
     next(error);
   });
 });
+
 
 router.get('/recipes/search/:query', function(req, res, next){
   recipeQueries.getSearch(req.params.query)
@@ -247,22 +268,8 @@ router.get('/user/:user_id/follows/recipes', function (req, res, next){
       return Promise.all(collection.map(fillRecipe));
     }))
   })
-  .then(function(message) {
-    res.status(200).json(message);
-  })
-  .catch(function(error){
-    next(error);
-  });
-});
-
-// See README.md for proper form format when submitting post requests
-router.post('/users', function(req, res, next){
-  userQueries.add(req.body)
-  .then(function(userID){
-    return userQueries.getSingle(userID);
-  })
-  .then(function(users){
-    res.status(200).json(users)
+  .then(function(all){
+    res.status(200).json(all);
   })
   .catch(function(error){
     next(error);

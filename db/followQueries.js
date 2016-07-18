@@ -13,7 +13,7 @@ function getFollows(userID) {
 }
 
 function add(userID, followingID) {
-  return Follows().insert({user_id: userID, following_id: followingID})
+  return Follows().insert({user_id: parseInt(userID), following_id: parseInt(followingID)})
 }
 
 function deleteID(followID) {
