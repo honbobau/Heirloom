@@ -20,9 +20,14 @@ function deleteID(favID) {
   return Favs().where('id', parseInt(favID)).del();
 }
 
+function idCheck(userID, recipeID) {
+  return knex.raw(`select * from favourites where user_id = ${userID} AND recipe_id = ${recipeID}`)
+}
+
 module.exports = {
   getAllFavs: getAllFavs,
   getFavs: getFavs,
   add: add,
-  deleteID: deleteID
+  deleteID: deleteID,
+  idCheck: idCheck
 };

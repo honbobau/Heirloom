@@ -20,10 +20,15 @@ function deleteID(followID) {
   return Follows().where('id', parseInt(followID)).del();
 }
 
+function idCheck(userID, followID) {
+  return knex.raw(`select * from follows where user_id = ${userID} AND following_id = ${followID}`);
+}
+
 
 module.exports = {
   getAllFollows: getAllFollows,
   getFollows: getFollows,
   add: add,
-  deleteID: deleteID
+  deleteID: deleteID,
+  idCheck: idCheck
 };

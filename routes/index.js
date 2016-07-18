@@ -59,20 +59,6 @@ router.post('/users', function(req, res, next){
   });
 });
 
-// router.post('/users', function(req, res, next){
-//   userQueries.add(req.body)
-//   .then(function(userID){
-//     return userQueries.getSingle(userID);
-//   })
-//   .then(function(users){
-//     followQueries.add(users.id, users.id)
-//     res.status(200).json(users)
-//   })
-//   .catch(function(error){
-//     next(error);
-//   })
-// });
-
 router.get('/recipes', function(req, res, next){
   console.log(req.decoded)
   recipeQueries.getAll()
@@ -218,6 +204,44 @@ router.get('/user/:user_id/favourites', function (req, res, next) {
     next(error);
   });
 });
+
+router.get('/user/:user_id/recipe/:recipe_id/favourites', function(req, res, next){
+  favQueries.idCheck(req.params.user_id, req.params.recipe_id)
+  .then(function(favs){
+    var data = favs.rows
+    if (data.length > 0){
+      res.status(200).json('true')
+    } else {
+      res.status(200).json('false');
+    }  
+  })
+});
+
+router.get('/user/:user_id/recipe/:recipe_id/likes', function(req, res, next){
+  likeQueries.idCheck(req.params.user_id, req.params.recipe_id)
+  .then(function(likes){
+    var data = likes.rows
+    if (data.length > 0){
+      res.status(200).json('true')
+    } else {
+      res.status(200).json('false');
+    }
+  })
+});
+
+router.get('/user/:user_id/follows/:following_id/follows', function(req, res, next){
+  followQueries.idCheck(req.params.user_id, req.params.following_id)
+  .then(function(follows){
+    var data = follows.rows
+    if (data.length > 0){
+      res.status(200).json('true')
+    } else {
+      res.status(200).json('false');
+    }
+  })
+});
+
+
 
 // Get followers associated to a user_id
 router.get('/user/:user_id/follows', function (req, res, next) {
