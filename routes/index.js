@@ -147,7 +147,9 @@ router.get('/recipes/:id', function (req, res, next) {
 router.get('/recipes/search/:query', function(req, res, next){
   recipeQueries.getSearch(req.params.query)
   .then(function(data){
-    res.status(200).json(data.rows)
+    var recipe = data.rows
+    Promise.all(recipe.map(recipe => getRecipePhotos(recipe.id)))
+    .then(allRecipes => res.status(200).json(allRecipes));
   })
 });
 
