@@ -117,6 +117,13 @@ router.get('/user/:id', function (req, res, next) {
   });
 });
 
+function fillRecipe(recipe) {
+  return photoQueries
+    .getPhotos(recipe.id)
+    .then(function (photos) {
+      return Object.assign(recipe, {photos: photos});
+    });
+}
 
 // Get recipes associated to user_id
 router.get('/user/:user_id/recipes', function (req, res, next) {
@@ -190,23 +197,28 @@ router.get('/user/:user_id/favourites', function (req, res, next) {
       return fav.recipe_id;
     });
   })
-  .then(function (recipe_id) {
-    return Promise.all(recipe_id
-    .map(recipeQueries.getSingle));
-  })
-  .then(function(recipe_collections){
-    console.log(recipe_collections)
-    return Promise.all(recipe_collections.map(function (collection) {
-      return Promise.all(collection.map(fillRecipe));
-    }))
-  })
-  .then(function(all){
-    res.status(200).json(all);
+  .then(function(recipes) {
+    console.log(recipes)
+    Promise.all(recipes.map(recipe => getRecipePhotos(recipe)))
+    .then(allRecipes => res.status(200).json(allRecipes));
   })
   .catch(function(error){
     next(error);
   });
 });
+
+  // .then(function(recipe_collections){
+  //   console.log(recipe_collections)
+  //   return Promise.all(recipe_collections.map(function (collection) {
+  //     return Promise.all(collection.map(fillRecipe));
+  //   }))
+  // })
+  // .then(function(all){
+  //   res.status(200).json(all);
+  // })
+  // .catch(function(error){
+  //   next(error);
+  // });
 
 router.get('/user/:user_id/recipe/:recipe_id/favourites', function(req, res, next){
   favQueries.idCheck(req.params.user_id, req.params.recipe_id)
@@ -269,15 +281,9 @@ router.get('/user/:user_id/follows', function (req, res, next) {
   })
 });
 
-function fillRecipe(recipe) {
-  console.log(recipe);
-  return photoQueries
-    .getPhotos(recipe.id)
-    .then(function (photos) {
-      return Object.assign(recipe, {photos: photos});
-    });
-}
 
+
+//Get recipes from users being followed
 router.get('/user/:user_id/follows/recipes', function (req, res, next){
   followQueries.getFollows(req.params.user_id)
   .then(function (follows) {
