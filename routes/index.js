@@ -185,20 +185,23 @@ router.get('/user/:user_id/likes', function (req, res, next) {
 // Get favourites associated to a user_id
 router.get('/user/:user_id/favourites', function (req, res, next) {
   favQueries.getFavs(req.params.user_id)
-  .then(function(favs){
-    result = []
-    dbResponse = 0
-    total = favs.length
-    favs.forEach(function(recipeID) { 
-      recipeQueries.getSingle(recipeID.recipe_id)
-      .then(function(recipe){
-        result.push(recipe)
-        dbResponse++
-        if (dbResponse == total) {
-        res.status(200).json(result);    
-        }
-      })
-    })
+  .then(function (favs) {
+    return favs.map(function (fav) {
+      return fav.recipe_id;
+    });
+  })
+  .then(function (recipe_id) {
+    return Promise.all(recipe_id
+    .map(recipeQueries.getSingle));
+  })
+  .then(function(recipe_collections){
+    console.log(recipe_collections)
+    return Promise.all(recipe_collections.map(function (collection) {
+      return Promise.all(collection.map(fillRecipe));
+    }))
+  })
+  .then(function(all){
+    res.status(200).json(all);
   })
   .catch(function(error){
     next(error);
