@@ -217,14 +217,6 @@ router.get('/user/:user_id/recipe/:recipe_id/favourites', function(req, res, nex
   })
 });
 
-<<<<<<< HEAD
-// See README.md for proper form format when submitting post requests
-router.post('/users', function(req, res, next){
-  console.log(req)
-  userQueries.add(req.body)
-  .then(function(userID){
-    return userQueries.getSingle(userID);
-=======
 router.get('/user/:user_id/recipe/:recipe_id/likes', function(req, res, next){
   likeQueries.idCheck(req.params.user_id, req.params.recipe_id)
   .then(function(likes){
@@ -234,7 +226,6 @@ router.get('/user/:user_id/recipe/:recipe_id/likes', function(req, res, next){
     } else {
       res.status(200).json('false');
     }
->>>>>>> development
   })
 });
 
