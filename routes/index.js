@@ -41,6 +41,7 @@ router.post('/login', function(req, res){
   });
 });
 
+// Create new user
 router.post('/users', function(req, res, next){
   req.body.password = bcrypt.hashSync(req.body.password, 10); 
   userQueries.add(req.body)
@@ -59,6 +60,7 @@ router.post('/users', function(req, res, next){
   });
 });
 
+// Get all recipes
 router.get('/recipes', function(req, res, next){
   console.log(req.decoded)
   recipeQueries.getAll()
@@ -101,10 +103,6 @@ router.get('/users', function(req, res, next) {
     next(error);
   });
 });
-
-// Get all recipes
-
-
 
 // Get single user
 router.get('/user/:id', function (req, res, next) {
@@ -157,7 +155,7 @@ router.get('/recipes/:id', function (req, res, next) {
   });
 });
 
-
+// Get recipes where the tags fit the query
 router.get('/recipes/search/:query', function(req, res, next){
   recipeQueries.getSearch(req.params.query)
   .then(function(data){
@@ -198,7 +196,6 @@ router.get('/user/:user_id/favourites', function (req, res, next) {
     });
   })
   .then(function(recipes) {
-    console.log(recipes)
     Promise.all(recipes.map(recipe => getRecipePhotos(recipe)))
     .then(allRecipes => res.status(200).json(allRecipes));
   })
@@ -207,19 +204,7 @@ router.get('/user/:user_id/favourites', function (req, res, next) {
   });
 });
 
-  // .then(function(recipe_collections){
-  //   console.log(recipe_collections)
-  //   return Promise.all(recipe_collections.map(function (collection) {
-  //     return Promise.all(collection.map(fillRecipe));
-  //   }))
-  // })
-  // .then(function(all){
-  //   res.status(200).json(all);
-  // })
-  // .catch(function(error){
-  //   next(error);
-  // });
-
+// Check if the user has already favourited the recipe
 router.get('/user/:user_id/recipe/:recipe_id/favourites', function(req, res, next){
   favQueries.idCheck(req.params.user_id, req.params.recipe_id)
   .then(function(favs){
@@ -232,6 +217,7 @@ router.get('/user/:user_id/recipe/:recipe_id/favourites', function(req, res, nex
   })
 });
 
+// Check if the user has already liked the recipe
 router.get('/user/:user_id/recipe/:recipe_id/likes', function(req, res, next){
   likeQueries.idCheck(req.params.user_id, req.params.recipe_id)
   .then(function(likes){
@@ -244,6 +230,7 @@ router.get('/user/:user_id/recipe/:recipe_id/likes', function(req, res, next){
   })
 });
 
+// Check if the user is already following another user
 router.get('/user/:user_id/follows/:following_id/follows', function(req, res, next){
   followQueries.idCheck(req.params.user_id, req.params.following_id)
   .then(function(follows){
